@@ -1,15 +1,21 @@
 package modelo;
 
+import java.util.Calendar;
+
 public class SeguroCoche extends Poliza {
 
 	protected String matricula;
 	protected int anyoCarnet;
 	
+	public static final double PORCENTAJE_ANTIGUEDAD=0.015;
+	public static final double RECARGO_NOVEL=75;
+	public static final double RECARGO_SINIESTRO=0.03;
+	
 	
 	public SeguroCoche() {
 		super();
 		this.matricula="";
-		this.anyoCarnet=0;
+		this.anyoCarnet=Calendar.getInstance().get(Calendar.YEAR);;
 	}
 
 		
@@ -51,15 +57,20 @@ public class SeguroCoche extends Poliza {
 
 	@Override
 	public double calcularPrima() {
-		double totalpagar=super.primaBase;
-		if (super.anyo<=10) {
-			totalpagar=totalpagar -(super.primaBase*0.015*super.anyo);
+		
+		int antiSeguro = Calendar.getInstance().get(Calendar.YEAR)-anyo; 
+		int antiCarnet = Calendar.getInstance().get(Calendar.YEAR)-anyoCarnet;
+		
+		if (antiSeguro>10) {
+			antiSeguro=10;
 		}
-		if (anyoCarnet<5) {
-			totalpagar=totalpagar+75;
+		double totalpagar=primaBase - (primaBase*PORCENTAJE_ANTIGUEDAD*antiSeguro);
+		
+		if (antiCarnet<5) {
+			totalpagar=totalpagar+RECARGO_NOVEL;
 		}
 	
-		return totalpagar+(totalpagar*0.03*super.numSiniestrosHistorico);
+		return totalpagar+(totalpagar*RECARGO_SINIESTRO*numSiniestrosHistorico);
 	}
 
 }
